@@ -23,8 +23,8 @@ urlpatterns = [
     path("", views.index),
     path("categories/", views.CategoryView.as_view()),
     path("categories/<int:category_id>", views.CategoryView.get_by_id),
-    # path("categories_add/", views.CategoryView.post),
     path("ads/", views.AdView.as_view()),
     path("ads/<int:ad_id>", views.AdView.get_by_id),
+    # View for loading data into database from json files
     path("add_info/", views.json_to_cat),
 ]

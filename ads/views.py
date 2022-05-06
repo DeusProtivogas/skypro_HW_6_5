@@ -2,7 +2,7 @@ import json
 
 from django.http import JsonResponse, HttpResponse
 from django.utils.decorators import method_decorator
-from django.views import View
+
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView
 
@@ -20,7 +20,6 @@ class CategoryView(DetailView):
         response = []
 
         for cat in categories:
-            print(cat)
             response.append({
                 "id": cat.id,
                 "name": cat.name,
@@ -40,7 +39,7 @@ class CategoryView(DetailView):
                 "id": category.id,
                 "name": category.name
             }, safe=False, json_dumps_params={"ensure_ascii": False})
-    #
+
     def post(self, request):
         cat_data = json.loads(request.body)
         cat = Category.objects.create(**cat_data)
@@ -58,7 +57,6 @@ class AdView(DetailView):
         response = []
 
         for ad in ads:
-            print(ad)
             response.append({
                 "id": ad.id,
                 "name": ad.name,
@@ -120,6 +118,4 @@ def json_to_cat(request):
         for item in json_data:
             print(item)
             ad = Ad.objects.get_or_create(**item)
-            # movie and genres created
     return JsonResponse("OK", safe=False)
-# json_to_cat("categories.json")
