@@ -17,7 +17,7 @@ def csv_to_json(file):
                 new_item = {}
                 for ind in range(len(columns)):
                     new_item[columns[ind].lower()] = row[ind]
-                if file == "ads":
+                if file == "main":
                     new_item["is_published"] = True if new_item.get("is_published") == "TRUE" else False
                 data.append(new_item)
 
@@ -25,6 +25,6 @@ def csv_to_json(file):
         json.dump(data,  f)
 
 
-csv_to_json("ads")
+csv_to_json("main")
 csv_to_json("categories")
 
