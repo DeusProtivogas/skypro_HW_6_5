@@ -23,17 +23,11 @@ class UserListView(ListView):
         super().get(request, *args, **kwargs)
         self.object_list = self.object_list.annotate(total_ads=Count("ad", filter=Q(ad__is_published=True)))
 
-        # main = Ad.objects.all()
-
-        # paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
-        # page_number = request.GET.get("page")
-        # page_obj = paginator.get_page(page_number)
 
         self.object_list = self.object_list.order_by("username")
 
         users = []
 
-        # total_adds =
 
         for user in self.object_list:
             users.append({
@@ -49,8 +43,6 @@ class UserListView(ListView):
 
         response = {
             "items": users,
-            # "num_pages": paginator.num_pages,
-            # "total": paginator.count,
         }
 
         return JsonResponse(response, safe=False)
@@ -86,7 +78,6 @@ class UserCreateView(CreateView):
 
     def post(self, request, *args, **kwargs):
         user_data = json.loads(request.body)
-        # user = User.objects.create(**ad_data)
         user = User.objects.create(
             first_name=user_data["first_name"],
             last_name=user_data["last_name"],
@@ -120,7 +111,6 @@ class UserUpdateView(UpdateView):
         super().post(request, *args, **kwargs)
 
         user_data = json.loads(request.body)
-        # ad = Ad.objects.create(**ad_data)
 
         self.object.first_name = user_data["first_name"]
         self.object.last_name = user_data["last_name"]

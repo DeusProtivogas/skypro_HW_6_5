@@ -17,7 +17,6 @@ class Category(models.Model):
 
 class Ad(models.Model):
     name = models.CharField(max_length=100)
-    # author = models.CharField(max_length=100)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     price = models.IntegerField(default=0)
     description = models.CharField(max_length=1000)
