@@ -18,10 +18,17 @@ from django.contrib import admin
 from django.urls import path, include
 
 from main import views, settings
+from rest_framework import routers
+
+from location.views import LocationViewSet
+
+router = routers.SimpleRouter()
+router.register("location", LocationViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", views.index),
+    path("api-auth/", include('rest_framework.urls')),
     path("categories/", views.CategoryListView.as_view()),
     path("categories/<int:category_id>", views.CategoryDetailView.as_view()),
     path("categories/create/", views.CategoryCreateView.as_view()),
@@ -35,6 +42,8 @@ urlpatterns = [
     # View for loading data into database from json files
     path("add_info/", views.json_to_cat),
 ]
+
+urlpatterns += router.urls
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

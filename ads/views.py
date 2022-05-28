@@ -17,10 +17,32 @@ from main import settings
 @method_decorator(csrf_exempt, name='dispatch')
 class AdListView(ListView):
     model = Ad
+    queryset = Ad.objects.all()
 
     def get(self, request, *args, **kwargs):
         super().get(request, *args, **kwargs)
         # main = Ad.objects.all()
+
+        categories = request.GET.getlist("cat", [])
+        print(f"Cats: {self.object_list}")
+        if categories:
+            self.object_list = self.object_list.filter(category_id__in=categories)
+
+        print(f"Cats: {self.object_list}")
+        if request.GET.get("text", None):
+            text_rmv = request.GET.get('text', None).replace('\"', '')
+            self.object_list = self.object_list.filter(name__icontains=text_rmv)
+
+        print(f"Cats: {self.object_list}")
+        if request.GET.get("location", None):
+            self.object_list = self.object_list.filter(author__locations__name__icontains=request.GET.get("location"))
+
+        if request.GET.get("price_from", None):
+            self.object_list = self.object_list.filter(price__gte=request.GET.get("price_from"))
+
+        if request.GET.get("price_to", None):
+            self.object_list = self.object_list.filter(price__lte=request.GET.get("price_to"))
+
 
         self.object_list = self.object_list.order_by("-price")
 
