@@ -8,16 +8,63 @@ from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DeleteView, ListView, DetailView, CreateView, UpdateView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, ListAPIView, UpdateAPIView, DestroyAPIView
+
+from rest_framework.permissions import IsAuthenticated
 
 from ads.models import Ad
 
 from main import settings
+
+from ads.models import Selection
+from ads.serializers import SelectionDetailSerializer, SelectionListSerializer, SelectionSerializer
+
+from ads.permissions import SelectionUpdatePermission
+
+from ads.serializers import AdDetailSerializer
+
+
+def root(request):
+    return JsonResponse({
+        "status": "ok"
+    })
+
+
+class SelectionListView(ListAPIView):
+    queryset = Selection.objects.all()
+    serializer_class = SelectionListSerializer
+
+
+class SelectionRetrieveView(RetrieveAPIView):
+    queryset = Selection.objects.all()
+    serializer_class = SelectionDetailSerializer
+
+
+class SelectionCreateView(CreateAPIView):
+    queryset = Selection.objects.all()
+    serializer_class = SelectionSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class SelectionUpdateView(UpdateAPIView):
+    queryset = Selection.objects.all()
+    serializer_class = SelectionSerializer
+    permission_classes = [IsAuthenticated, SelectionUpdatePermission]
+
+
+class SelectionDeleteView(DestroyAPIView):
+    queryset = Selection.objects.all()
+    serializer_class = SelectionSerializer
+    permission_classes = [IsAuthenticated, SelectionUpdatePermission]
+
+
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AdListView(ListView):
     model = Ad
     queryset = Ad.objects.all()
+
 
     def get(self, request, *args, **kwargs):
         super().get(request, *args, **kwargs)
@@ -73,29 +120,35 @@ class AdListView(ListView):
         return JsonResponse(response, safe=False)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class AdDetailView(DetailView):
-    model = Ad
+# @method_decorator(csrf_exempt, name='dispatch')
+# class AdDetailView(DetailView):
+#     model = Ad
+#
+#     def get(self, request, *args, **kwargs):
+#
+#         try:
+#             ad = self.get_object()
+#         except Ad.DoesNotExist:
+#             return JsonResponse({
+#                 "error": "not found",
+#             }, status=404)
+#
+#         return JsonResponse({
+#                 "id": ad.id,
+#                 "name": ad.name,
+#                 "author": ad.author.username,
+#                 "price": ad.price,
+#                 "description": ad.description,
+#                 "address": ad.address,
+#                 "is_published": ad.is_published,
+#                 "category": ad.category.name,
+#             }, safe=False, json_dumps_params={"ensure_ascii": False})
 
-    def get(self, request, *args, **kwargs):
 
-        try:
-            ad = self.get_object()
-        except Ad.DoesNotExist:
-            return JsonResponse({
-                "error": "not found",
-            }, status=404)
-
-        return JsonResponse({
-                "id": ad.id,
-                "name": ad.name,
-                "author": ad.author.username,
-                "price": ad.price,
-                "description": ad.description,
-                "address": ad.address,
-                "is_published": ad.is_published,
-                "category": ad.category.name,
-            }, safe=False, json_dumps_params={"ensure_ascii": False})
+class AdDetailView(RetrieveAPIView):
+    queryset = Ad.objects.all()
+    serializer_class = AdDetailSerializer
+    permission_classes = [IsAuthenticated]
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AdCreateView(CreateView):

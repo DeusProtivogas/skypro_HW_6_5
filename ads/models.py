@@ -1,8 +1,8 @@
 from django.db import models
 
 # Create your models here.
+# from user.models import User
 from user.models import User
-
 
 class Category(models.Model):
     name = models.CharField(max_length=30)
@@ -34,3 +34,8 @@ class Ad(models.Model):
     def __str__(self):
         return self.name
 
+
+class Selection(models.Model):
+    name = models.CharField(max_length=20)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    items = models.ManyToManyField(Ad)
