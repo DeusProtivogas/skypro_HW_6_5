@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     "ads",
     "location",
     "user",
-    "authentication",
 ]
 
 MIDDLEWARE = [
