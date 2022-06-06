@@ -68,19 +68,15 @@ class AdListView(ListView):
 
     def get(self, request, *args, **kwargs):
         super().get(request, *args, **kwargs)
-        # main = Ad.objects.all()
 
         categories = request.GET.getlist("cat", [])
-        print(f"Cats: {self.object_list}")
         if categories:
             self.object_list = self.object_list.filter(category_id__in=categories)
 
-        print(f"Cats: {self.object_list}")
         if request.GET.get("text", None):
             text_rmv = request.GET.get('text', None).replace('\"', '')
             self.object_list = self.object_list.filter(name__icontains=text_rmv)
 
-        print(f"Cats: {self.object_list}")
         if request.GET.get("location", None):
             self.object_list = self.object_list.filter(author__locations__name__icontains=request.GET.get("location"))
 
@@ -120,31 +116,6 @@ class AdListView(ListView):
         return JsonResponse(response, safe=False)
 
 
-# @method_decorator(csrf_exempt, name='dispatch')
-# class AdDetailView(DetailView):
-#     model = Ad
-#
-#     def get(self, request, *args, **kwargs):
-#
-#         try:
-#             ad = self.get_object()
-#         except Ad.DoesNotExist:
-#             return JsonResponse({
-#                 "error": "not found",
-#             }, status=404)
-#
-#         return JsonResponse({
-#                 "id": ad.id,
-#                 "name": ad.name,
-#                 "author": ad.author.username,
-#                 "price": ad.price,
-#                 "description": ad.description,
-#                 "address": ad.address,
-#                 "is_published": ad.is_published,
-#                 "category": ad.category.name,
-#             }, safe=False, json_dumps_params={"ensure_ascii": False})
-
-
 class AdDetailView(RetrieveAPIView):
     queryset = Ad.objects.all()
     serializer_class = AdDetailSerializer
@@ -180,7 +151,6 @@ class AdUpdateView(UpdateView):
         super().post(request, *args, **kwargs)
 
         ad_data = json.loads(request.body)
-        # ad = Ad.objects.create(**ad_data)
 
         self.object.name = ad_data["name"]
         self.object.author = ad_data["author"]

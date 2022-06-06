@@ -5,11 +5,6 @@ from user.models import User
 
 from location.models import Location
 
-#
-# class LocationSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Location
-#         fields = "__all__"
 
 class UserListSerializer(serializers.ModelSerializer):
     locations = serializers.SlugRelatedField(
