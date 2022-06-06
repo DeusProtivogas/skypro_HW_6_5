@@ -86,7 +86,7 @@ class UserDetailView(RetrieveAPIView):
 # @method_decorator(csrf_exempt, name='dispatch')
 class UserCreateView(CreateAPIView):
     queryset = User.objects.all()
-    serializer = UserCreateSerializer
+    serializer_class = UserCreateSerializer
     # model = User
     # fields = [ "first_name", "last_name", "username", "password", "role", "age", "locations" ]
     #
