@@ -23,6 +23,10 @@ from ads.permissions import SelectionUpdatePermission
 
 from ads.serializers import AdDetailSerializer
 
+from user.models import User
+
+from ads.models import Category
+
 
 def root(request):
     return JsonResponse({
@@ -99,12 +103,14 @@ class AdListView(ListView):
             all_ads.append({
                 "id": ad.id,
                 "name": ad.name,
-                "author": ad.author.username,
+                "author_id": ad.author_id,
+                "author": ad.author.first_name,
                 "price": ad.price,
                 "description": ad.description,
-                "address": ad.address,
+                # "address": ad.address,
                 "is_published": ad.is_published,
-                "category": ad.category.name,
+                "category_id": ad.category_id,
+                "image": ad.image.url if ad.image else None,
             })
 
         response = {
@@ -128,18 +134,23 @@ class AdCreateView(CreateView):
 
     def post(self, request, *args, **kwargs):
         ad_data = json.loads(request.body)
+        print(ad_data)
+        ad_data["author"] = User.objects.get(id=int(ad_data["author"]))
+        ad_data["category"] = Category.objects.get(id=int(ad_data["category"]))
+
         ad = Ad.objects.create(**ad_data)
 
         return JsonResponse({
                 "id": ad.id,
                 "name": ad.name,
-                "author": ad.author.username,
+                "author": ad.author.id,
                 "price": ad.price,
                 "description": ad.description,
-                "address": ad.address,
+                # "address": ad.address,
                 "is_published": ad.is_published,
-                "category": ad.category.name,
-            }, safe=False, json_dumps_params={"ensure_ascii": False})
+                "category": ad.category.id,
+                "image": None,
+            }, safe=False, json_dumps_params={"ensure_ascii": False}, status=201)
 
 
 @method_decorator(csrf_exempt, name='dispatch')

@@ -1,11 +1,25 @@
+from datetime import date
+from dateutil.relativedelta import relativedelta
+
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
 
 # Create your models here.
 from location.models import Location
 
+MIN_AGE = 9
 
-# class User(models.Model):
+
+def AgeCheckValidator(value: date):
+    difference = relativedelta(date.today(), value).years
+    if difference < MIN_AGE:
+        raise ValidationError(
+            "%(value) is too small",
+            params={"value", value}
+        )
+
+
 class User(AbstractUser):
     MEMBER = "member"
     MODERATOR = "moderator"
@@ -13,13 +27,11 @@ class User(AbstractUser):
 
     ROLES = [(MEMBER, "Пользователь"), (MODERATOR, "Модератор"), (ADMIN, "Админ")]
 
-    # first_name = models.CharField(max_length=20)
-    # last_name = models.CharField(max_length=20)
-    # username = models.CharField(max_length=20, unique=True)
-    # password = models.CharField(max_length=20)
     role = models.CharField(max_length=10, choices=ROLES, default="member")
     age = models.IntegerField(null=True)
     locations = models.ManyToManyField(Location)
+    birth_date = models.DateField(null=True, validators=[AgeCheckValidator])
+    email = models.EmailField(unique=True, null=True)
 
     class Meta:
         verbose_name = "Пользователь"

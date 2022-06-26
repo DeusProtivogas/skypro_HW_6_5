@@ -5,6 +5,16 @@ from user.models import User
 
 from location.models import Location
 
+class EmailValidator:
+    def __init__(self, forbidden):
+        if not isinstance(forbidden, list):
+            forbidden = [forbidden]
+        self.forbidden = forbidden
+
+    def __call__(self, value):
+        for e_domain in self.forbidden:
+            if value.endswith(e_domain) :
+                raise serializers.ValidationError(f"Using forbidden email domain name: {e_domain}")
 
 class UserListSerializer(serializers.ModelSerializer):
     locations = serializers.SlugRelatedField(
@@ -36,6 +46,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         many=True,
         slug_field="name",
     )
+    email = serializers.EmailField(validators=[EmailValidator(["rambler.ru"])])
 
     def is_valid(self, raise_exception=False):
         self._locations = self.initial_data.pop("locations")

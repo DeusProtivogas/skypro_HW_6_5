@@ -1,3 +1,4 @@
+from django.core.validators import MinLengthValidator, MinValueValidator
 from django.db import models
 
 # Create your models here.
@@ -5,6 +6,7 @@ from django.db import models
 from user.models import User
 
 class Category(models.Model):
+    slug = models.CharField(max_length=10, unique=True, validators=[MinLengthValidator(5)])
     name = models.CharField(max_length=30)
 
     class Meta:
@@ -16,10 +18,10 @@ class Category(models.Model):
 
 
 class Ad(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, validators=[MinLengthValidator(10)])
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    price = models.IntegerField(default=0)
-    description = models.CharField(max_length=1000)
+    price = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    description = models.CharField(max_length=1000, blank=True, null=True)
     address = models.CharField(max_length=120)
     is_published = models.BooleanField(default=False)
 
